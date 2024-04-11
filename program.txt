@@ -1,18 +1,5 @@
 // 1)	Стартовое приложение PatientPersonalAssistantApp.
 
-namespace PatientPersonalAssistantApp
-{
-    // Класс программы.
-    public class Program
-    {
-        // Точка входа в приложение.
-        public static void Main(string[] args)
-        {
-            // Код приложения.
-        }
-    }
-}
-
 using System.IO;
 using Microsoft.Extensions.Configuration;
 using PatientPersonalAssistant.BAL;

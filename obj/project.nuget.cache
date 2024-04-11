@@ -1,8 +1,13 @@
 {
   "version": 2,
-  "dgSpecHash": "bqLnJXYd4/wEfHv7jcMETGqEdnMOMhC8Z4hM6+htHuwDlRYLHqWRz9F+6RLCIU0vQkcpJzKqVemXqhlDgFf1lA==",
+  "dgSpecHash": "tBXSnHb41uZvq+jKSGhHHEj8hb4t+kd4KkMOUwM0xyTilnxCzi/3kvyhg+0zaxdd6XGbF2Xa6VlCb9WOaFOB1w==",
   "success": true,
   "projectFilePath": "C:\\Users\\DIAMOND\\Documents\\C# project\\C# project.csproj",
-  "expectedPackageFiles": [],
+  "expectedPackageFiles": [
+    "C:\\Users\\DIAMOND\\.nuget\\packages\\microsoft.netcore.app.ref\\6.0.29\\microsoft.netcore.app.ref.6.0.29.nupkg.sha512",
+    "C:\\Users\\DIAMOND\\.nuget\\packages\\microsoft.windowsdesktop.app.ref\\6.0.29\\microsoft.windowsdesktop.app.ref.6.0.29.nupkg.sha512",
+    "C:\\Users\\DIAMOND\\.nuget\\packages\\microsoft.aspnetcore.app.ref\\6.0.29\\microsoft.aspnetcore.app.ref.6.0.29.nupkg.sha512",
+    "C:\\Users\\DIAMOND\\.nuget\\packages\\microsoft.netcore.app.host.win-x64\\6.0.29\\microsoft.netcore.app.host.win-x64.6.0.29.nupkg.sha512"
+  ],
   "logs": []
 }

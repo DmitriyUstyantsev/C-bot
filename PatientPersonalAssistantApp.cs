@@ -1,4 +1,4 @@
-// 1)	Стартовое приложение PatientPersonalAssistantApp.
+// 1) Стартовое приложение PatientPersonalAssistantApp.
 
 using System.IO;
 using Microsoft.Extensions.Configuration;
@@ -16,7 +16,7 @@ namespace PatientPersonalAssistantApp
             var connectionString = config.GetConnectionString("DefaultConnection");
 
             TelegramBotManager telegramBotManager = new TelegramBotManager(token, new TelegramBotRepository(connectionString));
-            telegramBotManager.StartTheBot();
+            telegramBotManager.StartTheBotAsync().Wait(); // Измененная строка
         }
 
         private static IConfiguration SetConfiguration()
@@ -24,6 +24,7 @@ namespace PatientPersonalAssistantApp
             var builder = new ConfigurationBuilder()
                 .SetBasePath(Directory.GetCurrentDirectory())
                 .AddJsonFile("appsettings.json", optional: false, reloadOnChange: true);
+
             return builder.Build();
         }
     }

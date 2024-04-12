@@ -1,4 +1,4 @@
-// 5)	Уровень бизнес-логики. PatientPersonalAssistant.BAL.
+// 5)    Уровень бизнес-логики. PatientPersonalAssistant.BAL.
  
 using PatientPersonalAssistant.BAL.Core.Models;
 using PatientPersonalAssistant.DAL;
@@ -64,57 +64,56 @@ namespace PatientPersonalAssistant.BAL
                 }
             }
         }
-private async void BotCallbackQueryReceived(object sender, CallbackQueryEventArgs e)
-{
-var callback = e.CallbackQuery; string userAnswer = callback.Data;
-string[] userAnswerSplit = userAnswer.Split("_"); Console.WriteLine($"{callback.From.Id}
-{callback.From.FirstName}");
-Console.WriteLine($"{callback.Data}");
-if (users.FirstOrDefault(u => u.TelegaramId == Convert.ToInt32(userAnswerSplit[2])) == null)
-{
-"");
- 
-await Bot.AnswerCallbackQueryAsync(callback.Id,
-await Bot.SendTextMessageAsync(callback.From.Id,
- 
-"С прошлого опроса прошло слишком много времени. Пожалуйста, начните новый опрос с помощью команды /entry.");
-}
-else
-{
-switch (userAnswerSplit[1]) 
-{
-case "firstQuestion": users.FirstOrDefault(u => u.TelegaramId
-== callback.From.Id).BranchId = Convert.ToDecimal(userAnswerSplit[0]);
-await ResponseToFirstQuestionAsync(callback, userAnswerSplit[0]).ConfigureAwait(false);
-break; case "survey":
-await ResponseToUserAsync(callback, userAnswerSplit[0]).ConfigureAwait(false);
-break;
-case "lastQuestion":
-if (userAnswerSplit[0] == "-1") await
-GetRecomendationAsync(callback).ConfigureAwait(false);
-else
-{
-users.Remove(users.FirstOrDefault(u
-=> u.TelegaramId == callback.From.Id));
-await Bot.AnswerCallbackQueryAsync(callback.Id, "До новых встреч!");
-await Bot.DeleteMessageAsync(callback.Message.Chat.Id, callback.Message.MessageId);
-}
-break;
-}
-}
+
+        private async void BotCallbackQueryReceived(object sender, CallbackQueryEventArgs e)
+        {
+            var callback = e.CallbackQuery;
+            string userAnswer = callback.Data;
+            string[] userAnswerSplit = userAnswer.Split("_");
+            Console.WriteLine($"{callback.From.Id} {callback.From.FirstName}");
+            Console.WriteLine($"{callback.Data}");
+
+            if (users.FirstOrDefault(u => u.TelegramId == Convert.ToInt32(userAnswerSplit[2])) == null)
+            {
+                await Bot.AnswerCallbackQueryAsync(callback.Id);
+                await Bot.SendTextMessageAsync(callback.From.Id, "С прошлого опроса прошло слишком много времени. Пожалуйста, начните новый опрос с помощью команды /entry.");
+            }
+            else
+            {
+                switch (userAnswerSplit[1])
+                {
+                    case "firstQuestion":
+                        users.FirstOrDefault(u => u.TelegramId == callback.From.Id).UserState = "Go";
+                        await ResponseToFirstQuestionAsync(callback, userAnswerSplit[0]);
+                        break;
+                    case "survey":
+                        await ResponseToUserAsync(callback, userAnswerSplit[0]);
+                        break;
+                    case "lastQuestion":
+                        if (userAnswerSplit[0] == "-1")
+                            await GetRecomendationAsync(callback);
+                        else
+                {
+                    users.Remove(users.FirstOrDefault(u => u.TelegramId == callback.From.Id));
+                    await Bot.AnswerCallbackQueryAsync(callback.Id, "До новых встреч!");
+                    await Bot.DeleteMessageAsync(callback.Message.Chat.Id, callback.Message.MessageId);
+                }
+                break;
+        }
+    }
 }
 private async Task AddUserSurveyDataToDbAsync(CallbackQuery callback, string answerId)
  
 {
-UserSurveyDataBAL userSurveyData = new
-UserSurveyDataBAL
-{
-TelegramId = callback.From.Id, CodeOfEntry = users.FirstOrDefault(u =>
-u.TelegaramId == callback.From.Id).CodeOfEntry,
-Date = DateTime.Today.ToString("d"), AnswerToTheQuestionId =
-Convert.ToInt32(answerId)
-};
-await telegramBotRepos.AddToUserSurveyDataAsync(userSurveyData).Config ureAwait(false);
+    UserSurveyDataBAL userSurveyData = new UserSurveyDataBAL
+    {
+        TelegramId = callback.From.Id,
+        CodeOfEntry = users.FirstOrDefault(u =>
+        u.TelegramId == callback.From.Id)?.CodeOfEntry,
+        Date = DateTime.Today.ToString("d"),
+        AnswerToTheQuestionId = Convert.ToInt32(answerId)
+    };
+    await telegramBotRepos.AddToUserSurveyDataAsync(userSurveyData).ConfigureAwait(false);
 }
 private async Task ResponseToFirstQuestionAsync(CallbackQuery callback, string answerId)
 {
@@ -157,7 +156,7 @@ private async Task GetRecomendationAsync(CallbackQuery callback)
 var entryCode = users.FirstOrDefault(u => u.TelegaramId == callback.From.Id).CodeOfEntry;
 var branchId = users.FirstOrDefault(u => u.TelegaramId == callback.From.Id).BranchId;
 var userData = await telegramBotRepos.GetUserSurveyDataByEntryCodeAsync(entryCode);
-var dataFromKnowlegeBase = await telegramBotRepos.GetDataFromKnowledgeBaseByBranchIdAsync(branchI d);
+var dataFromKnowlegeBase = await telegramBotRepos.GetDataFromKnowledgeBaseByBranchIdAsync(branchId);
 var possibleResults = await AnalyzeDataAsync(userData, dataFromKnowlegeBase, callback.From.Id);
 if (possibleResults.Any())
 {
@@ -265,7 +264,6 @@ private async Task SendFirstQuestionAsync(Message message)
     }
     await SendInlineKeyboardAsync(currentQuestionWithAnswers, message, "firstQuestion");
 }
-
 private async Task SendInlineKeyboardAsync(QuestionWithAnswers questionWithAnswers, Message message, string code)
 {
     var inlineKeyboard = new InlineKeyboardMarkup(
@@ -277,3 +275,4 @@ private async Task SendInlineKeyboardAsync(QuestionWithAnswers questionWithAnswe
 
     await Bot.SendTextMessageAsync(message.Chat.Id, questionWithAnswers.QuestionText, replyMarkup: inlineKeyboard);
 }
+}}

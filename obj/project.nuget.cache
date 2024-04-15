@@ -1,8 +1,18 @@
 {
   "version": 2,
-  "dgSpecHash": "DfxNdkB5mTv6/fpxhUsf6A46IoKRwO8EnCwnRUDtwDCoIMixbJloKrvwqBPC2MoPiu5dDva1Z9R9blzLf2MbZg==",
+  "dgSpecHash": "vPp+LetHzuqdh4ZiPRGEMeUjWt4EDGAnX8eCzpnLgeSO7auzbie3CHUll+KWWQl8L8X9cyrXgbL2Sz2axUw8mg==",
   "success": true,
   "projectFilePath": "C:\\Users\\DIAMOND\\Documents\\C# project\\C# project.csproj",
-  "expectedPackageFiles": [],
+  "expectedPackageFiles": [
+    "C:\\Users\\DIAMOND\\.nuget\\packages\\microsoft.extensions.dependencyinjection\\8.0.0\\microsoft.extensions.dependencyinjection.8.0.0.nupkg.sha512",
+    "C:\\Users\\DIAMOND\\.nuget\\packages\\microsoft.extensions.dependencyinjection.abstractions\\8.0.0\\microsoft.extensions.dependencyinjection.abstractions.8.0.0.nupkg.sha512",
+    "C:\\Users\\DIAMOND\\.nuget\\packages\\microsoft.extensions.logging\\8.0.0\\microsoft.extensions.logging.8.0.0.nupkg.sha512",
+    "C:\\Users\\DIAMOND\\.nuget\\packages\\microsoft.extensions.logging.abstractions\\8.0.0\\microsoft.extensions.logging.abstractions.8.0.0.nupkg.sha512",
+    "C:\\Users\\DIAMOND\\.nuget\\packages\\microsoft.extensions.options\\8.0.0\\microsoft.extensions.options.8.0.0.nupkg.sha512",
+    "C:\\Users\\DIAMOND\\.nuget\\packages\\microsoft.extensions.primitives\\8.0.0\\microsoft.extensions.primitives.8.0.0.nupkg.sha512",
+    "C:\\Users\\DIAMOND\\.nuget\\packages\\newtonsoft.json\\13.0.1\\newtonsoft.json.13.0.1.nupkg.sha512",
+    "C:\\Users\\DIAMOND\\.nuget\\packages\\system.runtime.compilerservices.unsafe\\6.0.0\\system.runtime.compilerservices.unsafe.6.0.0.nupkg.sha512",
+    "C:\\Users\\DIAMOND\\.nuget\\packages\\telegram.bot\\19.0.0\\telegram.bot.19.0.0.nupkg.sha512"
+  ],
   "logs": []
 }

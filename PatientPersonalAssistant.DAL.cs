@@ -10,14 +10,16 @@ namespace PatientPersonalAssistant.DAL
     {
         private readonly string connectionString;
 
-        public PatientPersonalAssistantDbContext() { }
-
-        public PatientPersonalAssistantDbContext(string connectionString) => this.connectionString = connectionString;
-
         public PatientPersonalAssistantDbContext(DbContextOptions<PatientPersonalAssistantDbContext> options)
             : base(options)
         {
         }
+
+        public PatientPersonalAssistantDbContext() { }
+
+        public PatientPersonalAssistantDbContext(string connectionString) => this.connectionString = connectionString;
+    }
+}
 
         public virtual DbSet<AnswerToTheQuestion> AnswerToTheQuestion { get; set; }
         public virtual DbSet<Branch> Branch { get; set; }
@@ -139,7 +141,8 @@ namespace PatientPersonalAssistant.DAL
                     .HasColumnType("numeric(10, 0)")
                     .ValueGeneratedOnAdd();
 
-                entity.Property(e => e.AnswerToTheQuestionId).HasColumnType("numeric(10, 0)");
+                entity.Property(e => e.AnswerToTheQuestionId)
+                    .HasColumnType("numeric(10, 0)");
 
                 entity.Property(e => e.CodeOfEntry)
                     .IsRequired()

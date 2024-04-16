@@ -1,33 +1,24 @@
-
 //2) Уровень доступа к данным. PatientPersonalAssistant.DAL.
 
 using Microsoft.EntityFrameworkCore;
+using PatientPersonalAssistant.BAL.Core.Models;
 using PatientPersonalAssistant.DAL.Models;
+using Microsoft.VisualStudio.TestTools.UnitTesting;
 using System.Collections.Generic;
 using System.Threading.Tasks;
-using PatientPersonalAssistant.BAL.Core.Models;
+using PatientPersonalAssistant.DAL;
 
-namespace PatientPersonalAssistant.DAL
+namespace PatientPersonalAssistant.DAL.Models
 {
     public partial class PatientPersonalAssistantDbContext : DbContext
     {
         private readonly string connectionString;
 
-        public PatientPersonalAssistantDbContext() { }
-
-        public PatientPersonalAssistantDbContext(string connectionString) => this.connectionString = connectionString;
-
-        public PatientPersonalAssistantDbContext(DbContextOptions<PatientPersonalAssistantDbContext> options)
-            : base(options)
+        public PatientPersonalAssistantDbContext(string connectionString)
+            : base()
         {
+            this.connectionString = connectionString;
         }
-
-        public virtual DbSet<AnswerToTheQuestion> AnswerToTheQuestion { get; set; }
-        public virtual DbSet<Branch> Branch { get; set; }
-        public virtual DbSet<Diagnosis> Diagnosis { get; set; }
-        public virtual DbSet<DiagnosisAnswerToTheQuestion> DiagnosisAnswerToTheQuestion { get; set; }
-        public virtual DbSet<Question> Question { get; set; }
-        public virtual DbSet<UserSurveyData> UserSurveyData { get; set; }
 
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
         {
@@ -37,6 +28,13 @@ namespace PatientPersonalAssistant.DAL
             }
         }
 
+        public virtual DbSet<AnswerToTheQuestion> AnswerToTheQuestion { get; set; }
+        public virtual DbSet<Branch> Branch { get; set; }
+        public virtual DbSet<Diagnosis> Diagnosis { get; set; }
+        public virtual DbSet<DiagnosisAnswerToTheQuestion> DiagnosisAnswerToTheQuestion { get; set; }
+        public virtual DbSet<Question> Question { get; set; }
+        public virtual DbSet<UserSurveyData> UserSurveyData { get; set; }
+
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
             modelBuilder.Entity<AnswerToTheQuestion>(entity =>
@@ -44,8 +42,6 @@ namespace PatientPersonalAssistant.DAL
                 entity.Property(e => e.Id)
                     .HasColumnType("numeric(10, 0)")
                     .ValueGeneratedOnAdd();
-
-                entity.Property(e => e.QuestionId).HasColumnType("numeric(10, 0)");
 
                 entity.Property(e => e.TextOfAnswer)
                     .IsRequired()
@@ -68,19 +64,17 @@ namespace PatientPersonalAssistant.DAL
                     .HasMaxLength(50)
                     .IsUnicode(false);
 
-                object value = entity.HasMany(d => d.Question)
+                entity.HasMany(d => d.Question)
                     .WithOne(p => p.Branch)
                     .HasForeignKey(d => d.BranchId)
                     .OnDelete(DeleteBehavior.ClientSetNull);
             });
 
-             value = modelBuilder.Entity<Diagnosis>(entity =>
+            modelBuilder.Entity<Diagnosis>(entity =>
             {
                 entity.Property(e => e.Id)
                     .HasColumnType("numeric(10, 0)")
                     .ValueGeneratedOnAdd();
-
-                entity.Property(e => e.BranchId).HasColumnType("numeric(10, 0)");
 
                 entity.Property(e => e.Name)
                     .IsRequired()
@@ -97,7 +91,7 @@ namespace PatientPersonalAssistant.DAL
                     .HasForeignKey(d => d.BranchId)
                     .OnDelete(DeleteBehavior.ClientSetNull);
             });
-            
+
             modelBuilder.Entity<DiagnosisAnswerToTheQuestion>(entity =>
             {
                 entity.ToTable("Diagnosis_AnswerToTheQuestion");
@@ -106,194 +100,130 @@ namespace PatientPersonalAssistant.DAL
                     .HasColumnType("numeric(10, 0)")
                     .ValueGeneratedOnAdd();
 
-                entity.Property(e => e.AnswerToTheQuestionId).HasColumnType("numeric(10, 0)");
-
-                entity.Property(e => e.DiagnosisId).HasColumnType("numeric(10, 0)");
-
                 entity.Property(e => e.WeightOfAnswer).HasColumnType("numeric(10, 0)");
 
                 entity.HasOne(d => d.AnswerToTheQuestion)
                     .WithMany(p => p.DiagnosisAnswerToTheQuestion)
                     .HasForeignKey(d => d.AnswerToTheQuestionId)
                     .OnDelete(DeleteBehavior.ClientSetNull);
+            });
 
-                entity.HasOne(d => d.Diagnosis)
-                    .WithMany(p => p.DiagnosisAnswerToTheQuestion)
-                    .HasForeignKey(d => d.DiagnosisId)
+            modelBuilder.Entity<Question>(entity =>
+            {
+                entity.Property(e => e.Id)
+                    .HasColumnType("numeric(10, 0)")
+                    .ValueGeneratedOnAdd();
+
+                entity.Property(e => e.QuestionText)
+                    .HasMaxLength(500)
+                    .IsUnicode(false);
+
+                entity.HasOne(d => d.Branch)
+                    .WithMany(p => p.Question)
+                    .HasForeignKey(d => d.BranchId)
                     .OnDelete(DeleteBehavior.ClientSetNull);
-                });
+            });
 
-                            modelBuilder.Entity<Question>(entity =>
-                {
-                    entity.Property(e => e.Id)
-                        .HasColumnType("numeric(10, 0)")
-                        .ValueGeneratedOnAdd();
+            modelBuilder.Entity<UserSurveyData>(entity =>
+            {
+                entity.Property(e => e.CodeOfEntry)
+                    .IsRequired()
+                    .HasMaxLength(50)
+                    .IsUnicode(false);
 
-                    entity.Property(e => e.BranchId).HasColumnType("numeric(10, 0)");
-
-                    entity.Property(e => e.QuestionText)
-                        .HasMaxLength(500)
-                        .IsUnicode(false);
-
-                    entity.HasOne(d => d.Branch)
-                        .WithMany(p => p.Question)
-                        .HasForeignKey(d => d.BranchId)
+                entity.HasOne(d => d.AnswerToTheQuestion)
+                        .WithMany(p => p.UserSurveyData)
+                        .HasForeignKey(d => d.AnswerToTheQuestionId)
                         .OnDelete(DeleteBehavior.ClientSetNull);
-                });
+            });
+        }
+        partial void OnModelCreatingPartial(ModelBuilder modelBuilder);
+    }
 
-                modelBuilder.Entity<UserSurveyData>(entity =>
-                {
-                    entity.Property(e => e.Id)
-                        .HasColumnType("numeric(10, 0)")
-                        .ValueGeneratedOnAdd();
+}
 
-                    entity.Property(e => e.AnswerToTheQuestionId).HasColumnType("numeric(10, 0)");
-
-                    entity.Property(e => e.CodeOfEntry)
-                        .IsRequired()
-                        .HasMaxLength(50)
-                        .IsUnicode(false);
-
-                    modelBuilder.Entity<UserSurveyData>(entity =>
-                    {
-                        entity.Property(e => e.Date)
-                            .IsRequired()
-                            .HasMaxLength(20)
-                            .IsUnicode(false);
-
-                        entity.HasOne(d => d.AnswerToTheQuestion)
-                            .WithMany(p => p.UserSurveyData)
-                            .HasForeignKey(d => d.AnswerToTheQuestionId)
-                            .OnDelete(DeleteBehavior.ClientSetNull);
-                    });
-                }};
-        
-                    partial void OnModelCreatingPartial(ModelBuilder modelBuilder);
-                    }
-                    }
-
-                    namespace PatientPersonalAssistant.DAL.Models
-                    {
-                    public partial class AnswerToTheQuestion
-                    {
-                        public AnswerToTheQuestion()
-                        {
-                        DiagnosisAnswerToTheQuestion = new HashSet<DiagnosisAnswerToTheQuestion>();
-                        UserSurveyData = new HashSet<UserSurveyData>();
-                        }
-                        public decimal Id { get; set; }
-                        public string TextOfAnswer { get; set; } public decimal QuestionId { get; set; }
-                        public virtual Question Question { get; set; }
-                        public virtual ICollection<DiagnosisAnswerToTheQuestion> DiagnosisAnswerToTheQuestion { get; set; }
-                        public virtual ICollection<UserSurveyData> UserSurveyData { get; set; }
-                        }
-                        }
-
-                        namespace PatientPersonalAssistant.DAL.Models
+namespace PatientPersonalAssistant.DAL.Models
 {
-                        public partial class Branch
-                        {
-                            public Branch()
-                            {
-                                Diagnosis = new HashSet<Diagnosis>();
-                                Question = new HashSet<Question>();
-                            }
-                            
-                            public decimal Id { get; set; }
-                            public string Name { get; set; }
-                            public decimal TotalWeightOfBranchOfQuestion { get; set; }
-                            
-                            public virtual ICollection<Diagnosis> Diagnosis { get; set; }
-                            public virtual ICollection<Question> Question { get; set; }
-                        }
-                    }
-                        namespace PatientPersonalAssistant.DAL.Models
-                        {
-                        public partial class Diagnosis
-                        {
-                            public Diagnosis()
-                            {
-                                DiagnosisAnswerToTheQuestion = new HashSet<DiagnosisAnswerToTheQuestion>();
-                            }
+    public partial class AnswerToTheQuestion
+    {
+        public AnswerToTheQuestion()
+        {
+            DiagnosisAnswerToTheQuestion = new HashSet<DiagnosisAnswerToTheQuestion>();
+            UserSurveyData = new HashSet<UserSurveyData>();
+        }
+        public decimal Id { get; set; }
+        public string TextOfAnswer { get; set; }
+        public decimal QuestionId { get; set; }
+        public virtual Question Question { get; set; }
+        public virtual ICollection<DiagnosisAnswerToTheQuestion> DiagnosisAnswerToTheQuestion { get; set; }
+        public virtual ICollection<UserSurveyData> UserSurveyData { get; set; }
+    }
+}
 
-                        public decimal Id { get; set; }
-                        
-                        public string Name { get; set; }
-                        public string Recommendation { get; set; } public decimal BranchId { get; set; }
-
-                        public virtual Branch Branch { get; set; }
-                        public virtual ICollection<DiagnosisAnswerToTheQuestion> DiagnosisAnswerToTheQuestion { get; set; }
-                        }
-                        }
-                        namespace PatientPersonalAssistant.DAL.Models
+namespace PatientPersonalAssistant.DAL.Models
 {
-                        public partial class AnswerToTheQuestion
-                        {
-                            public AnswerToTheQuestion()
-                            {
-                                DiagnosisAnswerToTheQuestion = new HashSet<DiagnosisAnswerToTheQuestion>();
-                                UserSurveyData = new HashSet<UserSurveyData>();
-                            }
-                            
-                            public decimal Id { get; set; }
-                            public string TextOfAnswer { get; set; }
-                            public decimal QuestionId { get; set; }
-                            
-                            public virtual Question Question { get; set; }
-                            public virtual ICollection<DiagnosisAnswerToTheQuestion> DiagnosisAnswerToTheQuestion { get; set; }
-                            public virtual ICollection<UserSurveyData> UserSurveyData { get; set; }
-                        }
-                    }
-                        namespace PatientPersonalAssistant.DAL.Models
-                        {
-                        public partial class Question
-                        {
-                        public Question()
-                        {
-                        AnswerToTheQuestion = new HashSet<AnswerToTheQuestion>();
-                        }
-                        
-                        public decimal Id { get; set; }
-                        public string QuestionText { get; set; } public decimal BranchId { get; set; }
+    public partial class Branch
+    {
+        public Branch()
+        {
+            Diagnosis = new HashSet<Diagnosis>();
+            Question = new HashSet<Question>();
+        }
 
-                        public virtual Branch Branch { get; set; } 
-                        public virtual ICollection<AnswerToTheQuestion>
-                        AnswerToTheQuestion { get; set; }
-                        }
-                        }
+        public decimal Id { get; set; }
+        public string Name { get; set; }
+        public decimal TotalWeightOfBranchOfQuestion { get; set; }
 
-                        namespace PatientPersonalAssistant.DAL.Models
+        public virtual ICollection<Diagnosis> Diagnosis { get; set; }
+        public virtual ICollection<Question> Question { get; set; }
+    }
+}
+
+namespace PatientPersonalAssistant.DAL.Models
 {
-                        public partial class UserSurveyData
-                        {
-                            public decimal Id { get; set; }
-                            public decimal AnswerToTheQuestionId { get; set; }
-                            public string CodeOfEntry { get; set; }
-                            public string Date { get; set; }
-                            
-                            public virtual AnswerToTheQuestion AnswerToTheQuestion { get; set; }
-                        }
-                    }
+    public partial class Diagnosis
+    {
+        public Diagnosis()
+        {
+            DiagnosisAnswerToTheQuestion = new HashSet<DiagnosisAnswerToTheQuestion>();
+        }
 
-                        namespace PatientPersonalAssistant.DAL
-                        {
-                        public interface ITelegramBotRepository
-                        {
-                        Task<QuestionWithAnswers> GetQuestionWithAnswersByQuestionIdAsync(decimal Id);
+        public decimal Id { get; set; }
 
-                        Task AddToUserSurveyDataAsync(UserSurveyDataBAL userSurvey);
+        public string Name { get; set; }
+        public string Recommendation { get; set; }
+        public decimal BranchId { get; set; }
 
-                        Task<IEnumerable<QuestionWithAnswers>> GetQuestionsWithAnswersByBranchIdAsync(decimal branchCode);
+        public virtual Branch Branch { get; set; }
+        public virtual ICollection<DiagnosisAnswerToTheQuestion> DiagnosisAnswerToTheQuestion { get; set; }
+    }
+}
 
-                        Task<IEnumerable<decimal>> GetUserSurveyDataByEntryCodeAsync(string entryCode);
+namespace PatientPersonalAssistant.DAL.Models
+{
+    public partial class UserSurveyData
+    {
+        public decimal Id { get; set; }
+        public decimal AnswerToTheQuestionId { get; set; }
+        public string CodeOfEntry { get; set; }
+        public string Date { get; set; }
 
-                        Task<IEnumerable<DataFromKnowledgeBase>> GetDataFromKnowledgeBaseByBranchIdAsync(decimal branchCode);
+        public virtual AnswerToTheQuestion AnswerToTheQuestion { get; set; }
+    }
+}
 
-                        Task<IEnumerable<BranchBAL>> GetAllBranchesAsync();
-
-                        Task<decimal> GetBranchWeightByBranchIdAsync(decimal branchId);
-
-                        Task<string> GetTextOfAnswerByIdAsync(string textOfAnswerId); 
-                        
-                        Task<string> GetBranchNameByIdAsync(string branchId);
-                        }}                        
+namespace PatientPersonalAssistant.DAL
+{
+    public interface ITelegramBotRepository
+    {
+        Task<QuestionWithAnswers> GetQuestionWithAnswersByQuestionIdAsync(decimal Id);
+        Task AddToUserSurveyDataAsync(UserSurveyDataBAL userSurvey);
+        Task<IEnumerable<QuestionWithAnswers>> GetQuestionsWithAnswersByBranchIdAsync(decimal branchCode);
+        Task<IEnumerable<decimal>> GetUserSurveyDataByEntryCodeAsync(string entryCode);
+        Task<IEnumerable<DataFromKnowledgeBase>> GetDataFromKnowledgeBaseByBranchIdAsync(decimal branchCode);
+        Task<IEnumerable<BranchBAL>> GetAllBranchesAsync();
+        Task<decimal> GetBranchWeightByBranchIdAsync(decimal branchId);
+        Task<string> GetTextOfAnswerByIdAsync(string textOfAnswerId);
+        Task<string> GetBranchNameByIdAsync(string branchId);
+    }
+}

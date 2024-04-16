@@ -134,7 +134,6 @@ namespace PatientPersonalAssistant.DAL.Models
         }
         partial void OnModelCreatingPartial(ModelBuilder modelBuilder);
     }
-
 }
 
 namespace PatientPersonalAssistant.DAL.Models

@@ -15,12 +15,10 @@ namespace PatientPersonalAssistant.DAL.MSSQLServer
     {
         private readonly string connectionString;
 
-
         public TelegramBotRepository(string connectionString)
         {
             this.connectionString = connectionString;
         }
-
 
         public async Task<QuestionWithAnswers> GetQuestionWithAnswersByQuestionIdAsync(decimal Id)
         {
@@ -42,43 +40,39 @@ namespace PatientPersonalAssistant.DAL.MSSQLServer
         public async Task<IEnumerable<QuestionWithAnswers>> GetQuestionsWithAnswersByBranchIdAsync(decimal branchId)
         {
             using PatientPersonalAssistantDbContext db = new PatientPersonalAssistantDbContext(connectionString);
+
             var questionsWithAnswersList = new List<QuestionWithAnswers>();
+
             await Task.Run(() =>
             {
-                var questionsWithAnswers = db.Question.Include(answers => answers.AnswerToTheQuestion).Where(q => q.BranchId == branchId);
+                var questionsWithAnswers = db.Question
+                    .Include(answers => answers.Answers)
+                    .Where(q => q.BranchId == branchId);
+
                 foreach (var questionWithAnswersDb in questionsWithAnswers)
                 {
+                    var questionWithAnswers = new QuestionWithAnswers
+                    {
+                        Id = questionWithAnswersDb.Id,
+                        QuestionText = questionWithAnswersDb.QuestionText,
+                        BranchId = questionWithAnswersDb.BranchId
+                    };
 
-
-
-                    QuestionWithAnswers
-
-        QuestionWithAnswers questionWithAnswers = new
-
-
-            {
-                Id = questionWithAnswersDb.Id,
-                QuestionText =
-
-        questionWithAnswersDb.QuestionText,
-                BranchId = questionWithAnswersDb.BranchId
-            };
-                    foreach (var answer in questionWithAnswersDb.AnswerToTheQuestion)
+                    foreach (var answer in questionWithAnswersDb.Answers)
                     {
                         questionWithAnswers.Answers.Add(new Answer
-                        { Id = answer.Id, TextOfAnswer = answer.TextOfAnswer });
+                        {
+                            Id = answer.Id,
+                            TextOfAnswer = answer.TextOfAnswer
+                        });
                     }
-
 
                     questionsWithAnswersList.Add(questionWithAnswers);
                 }
             });
 
-
             return questionsWithAnswersList;
-
         }
-
 
         public async Task AddToUserSurveyDataAsync(UserSurveyDataBAL userSurvey)
         {
@@ -95,7 +89,6 @@ namespace PatientPersonalAssistant.DAL.MSSQLServer
             await db.SaveChangesAsync().ConfigureAwait(false);
         }
 
-
         public async Task<IEnumerable<decimal>> GetUserSurveyDataByEntryCodeAsync(string entryCode)
         {
             using PatientPersonalAssistantDbContext db = new PatientPersonalAssistantDbContext(connectionString);
@@ -104,10 +97,8 @@ namespace PatientPersonalAssistant.DAL.MSSQLServer
             return userAnswers;
         }
 
-
         public async Task<IEnumerable<BranchBAL>> GetAllBranchesAsync()
         {
-
             using PatientPersonalAssistantDbContext db = new PatientPersonalAssistantDbContext(connectionString);
             List<Branch> data = new List<Branch>();
             await Task.Run(() =>
@@ -121,10 +112,8 @@ namespace PatientPersonalAssistant.DAL.MSSQLServer
                                                                             Name = b.Name
                                                                         });
 
-
             return branchList;
         }
-
 
         public async Task<IEnumerable<DataFromKnowlegeBase>> GetDataFromKnowledgeBaseByBranchIdAsync(decimal branchId)
         {
@@ -155,14 +144,12 @@ namespace PatientPersonalAssistant.DAL.MSSQLServer
             return dataList;
         }
 
-
         public async Task<decimal> GetBranchWeightByBranchIdAsync(decimal branchId)
         {
             using PatientPersonalAssistantDbContext db = new PatientPersonalAssistantDbContext(connectionString);
             var branch = await db.Branch.FirstOrDefaultAsync(q => q.Id == branchId).ConfigureAwait(false);
             return branch.TotalWeightOfBranchOfQuestion;
         }
-
 
         public async Task<string> GetTextOfAnswerById(string textOfAnswerId)
         {
@@ -171,7 +158,6 @@ namespace PatientPersonalAssistant.DAL.MSSQLServer
 
             return res.TextOfAnswer;
         }
-
 
         public async Task<string> GetBranchNameById(string branchId)
         {

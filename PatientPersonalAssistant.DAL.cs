@@ -2,10 +2,8 @@
 
 using Microsoft.EntityFrameworkCore;
 using PatientPersonalAssistant.BAL.Core.Models;
-using PatientPersonalAssistant.DAL.Models;
 using System.Collections.Generic;
 using System.Threading.Tasks;
-using PatientPersonalAssistant.DAL;
 
 namespace PatientPersonalAssistant.DAL.Models
 {
@@ -127,13 +125,14 @@ namespace PatientPersonalAssistant.DAL.Models
                     .IsUnicode(false);
 
                 entity.HasOne(d => d.AnswerToTheQuestion)
-                        .WithMany(p => p.UserSurveyData)
-                        .HasForeignKey(d => d.AnswerToTheQuestionId)
-                        .OnDelete(DeleteBehavior.ClientSetNull);
+                    .WithMany(p => p.UserSurveyData)
+                    .HasForeignKey(d => d.AnswerToTheQuestionId)
+                    .OnDelete(DeleteBehavior.ClientSetNull);
             });
-        }
-        partial void OnModelCreatingPartial(ModelBuilder modelBuilder);
+
+            partial void OnModelCreatingPartial(ModelBuilder modelBuilder);
     }
+}
 }
 
 namespace PatientPersonalAssistant.DAL.Models
@@ -203,6 +202,24 @@ namespace PatientPersonalAssistant.DAL.Models
         public string Date { get; set; }
 
         public virtual AnswerToTheQuestion AnswerToTheQuestion { get; set; }
+    }
+}
+
+namespace PatientPersonalAssistant.DAL.Models
+{
+    public partial class Question
+    {
+        public Question()
+        {
+            AnswerToTheQuestion = new HashSet<AnswerToTheQuestion>();
+        }
+
+        public decimal Id { get; set; }
+        public string QuestionText { get; set; }
+        public decimal BranchId { get; set; }
+
+        public virtual Branch Branch { get; set; }
+        public virtual ICollection<AnswerToTheQuestion> AnswerToTheQuestion { get; set; }
     }
 }
 

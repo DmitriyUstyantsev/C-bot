@@ -11,141 +11,173 @@ using PatientPersonalAssistant.DAL.Models;
 namespace PatientPersonalAssistant.DAL.MSSQLServer
 {
     public class TelegramBotRepository : ITelegramBotRepository
+
     {
-        private readonly PatientPersonalAssistantDbContext _context;
+        private readonly string connectionString;
+
 
         public TelegramBotRepository(string connectionString)
         {
-            var options = new DbContextOptionsBuilder<PatientPersonalAssistantDbContext>()
-                .UseSqlServer(connectionString)
-                .Options;
-            _context = new PatientPersonalAssistantDbContext(options);
+            this.connectionString = connectionString;
         }
 
-        public async Task<QuestionWithAnswers> GetQuestionWithAnswersByQuestionIdAsync(decimal id)
+
+        public async Task<QuestionWithAnswers> GetQuestionWithAnswersByQuestionIdAsync(decimal Id)
         {
-            var questionWithAnswersDb = await _context.Question
-                .Include(answers => answers.AnswerToTheQuestion)
-                .FirstOrDefaultAsync(q => q.Id == id);
-
-            if (questionWithAnswersDb == null)
-                return null;
-
-            var questionWithAnswers = new QuestionWithAnswers
+            using PatientPersonalAssistantDbContext db = new PatientPersonalAssistantDbContext(connectionString);
+            QuestionWithAnswers questionWithAnswers = new QuestionWithAnswers();
             {
-                Id = questionWithAnswersDb.Id,
-                QuestionText = questionWithAnswersDb.QuestionText,
-                BranchId = questionWithAnswersDb.BranchId,
-                Answers = questionWithAnswersDb.AnswerToTheQuestion
-                    .Select(a => new Answer { Id = a.Id, TextOfAnswer = a.TextOfAnswer })
-                    .ToList()
-            };
-
+                var questionWithAnswersDb = await db.Question.Include(answers => answers.AnswerToTheQuestion).FirstOrDefaultAsync(q => q.Id == Id).ConfigureAwait(false);
+                questionWithAnswers.Id = questionWithAnswersDb.Id; questionWithAnswers.QuestionText =
+                questionWithAnswersDb.QuestionText;
+                questionWithAnswers.BranchId = questionWithAnswersDb.BranchId;
+                foreach (var answer in questionWithAnswersDb.AnswerToTheQuestion)
+                {
+                    questionWithAnswers.Answers.Add(new Answer { Id = answer.Id, TextOfAnswer = answer.TextOfAnswer });
+                }
+            }
             return questionWithAnswers;
         }
 
         public async Task<IEnumerable<QuestionWithAnswers>> GetQuestionsWithAnswersByBranchIdAsync(decimal branchId)
         {
-            var questionsWithAnswers = await _context.Question
-                .Include(answers => answers.AnswerToTheQuestion)
-                .Where(q => q.BranchId == branchId)
-                .Select(q => new QuestionWithAnswers
+            using PatientPersonalAssistantDbContext db = new PatientPersonalAssistantDbContext(connectionString);
+            var questionsWithAnswersList = new List<QuestionWithAnswers>();
+            await Task.Run(() =>
+            {
+                var questionsWithAnswers = db.Question.Include(answers => answers.AnswerToTheQuestion).Where(q => q.BranchId == branchId);
+                foreach (var questionWithAnswersDb in questionsWithAnswers)
                 {
-                    Id = q.Id,
-                    QuestionText = q.QuestionText,
-                    BranchId = q.BranchId,
-                    Answers = q.AnswerToTheQuestion
-                        .Select(a => new Answer { Id = a.Id, TextOfAnswer = a.TextOfAnswer })
-                        .ToList()
-                })
-                .ToListAsync();
 
-            return questionsWithAnswers;
+
+
+                    QuestionWithAnswers
+
+        QuestionWithAnswers questionWithAnswers = new
+
+
+            {
+                Id = questionWithAnswersDb.Id,
+                QuestionText =
+
+        questionWithAnswersDb.QuestionText,
+                BranchId = questionWithAnswersDb.BranchId
+            };
+                    foreach (var answer in questionWithAnswersDb.AnswerToTheQuestion)
+                    {
+                        questionWithAnswers.Answers.Add(new Answer
+                        { Id = answer.Id, TextOfAnswer = answer.TextOfAnswer });
+                    }
+
+
+                    questionsWithAnswersList.Add(questionWithAnswers);
+                }
+            });
+
+
+            return questionsWithAnswersList;
+
         }
+
 
         public async Task AddToUserSurveyDataAsync(UserSurveyDataBAL userSurvey)
         {
-            var userSurveyData = new UserSurveyData
+            using PatientPersonalAssistantDbContext db = new PatientPersonalAssistantDbContext(connectionString);
+            UserSurveyData userSurveyData = new UserSurveyData
             {
                 CodeOfEntry = userSurvey.CodeOfEntry,
                 Date = userSurvey.Date,
                 TelegramId = userSurvey.TelegramId,
-                AnswerToTheQuestionId = userSurvey.AnswerToTheQuestionId
+                AnswerToTheQuestionId =
+            userSurvey.AnswerToTheQuestionId
             };
-
-            await _context.UserSurveyData.AddAsync(userSurveyData);
-            await _context.SaveChangesAsync();
+            await db.UserSurveyData.AddAsync(userSurveyData).ConfigureAwait(false);
+            await db.SaveChangesAsync().ConfigureAwait(false);
         }
+
 
         public async Task<IEnumerable<decimal>> GetUserSurveyDataByEntryCodeAsync(string entryCode)
         {
-            var userAnswers = await _context.UserSurveyData
-                .Where(d => d.CodeOfEntry == entryCode)
-                .Select(ua => ua.AnswerToTheQuestionId)
-                .ToListAsync();
-
+            using PatientPersonalAssistantDbContext db = new PatientPersonalAssistantDbContext(connectionString);
+            var userSurveyData = db.UserSurveyData.Where(d => d.CodeOfEntry == entryCode);
+            var userAnswers = userSurveyData.Select(ua => ua.AnswerToTheQuestionId).ToList();
             return userAnswers;
         }
 
+
         public async Task<IEnumerable<BranchBAL>> GetAllBranchesAsync()
         {
-            var branches = await _context.Branch
-                .Select(b => new BranchBAL
-                {
-                    Id = b.Id,
-                    Name = b.Name
-                })
-                .ToListAsync();
 
-            return branches;
+            using PatientPersonalAssistantDbContext db = new PatientPersonalAssistantDbContext(connectionString);
+            List<Branch> data = new List<Branch>();
+            await Task.Run(() =>
+            {
+                data = db.Branch.ToList();
+            }).ConfigureAwait(false);
+            var branchList = new List<BranchBAL>(); branchList.AddRange(from b in data
+                                                                        select new BranchBAL
+                                                                        {
+                                                                            Id = b.Id,
+                                                                            Name = b.Name
+                                                                        });
+
+
+            return branchList;
         }
+
 
         public async Task<IEnumerable<DataFromKnowlegeBase>> GetDataFromKnowledgeBaseByBranchIdAsync(decimal branchId)
         {
-            var data = await _context.Diagnosis
-                .Where(d => d.BranchId == branchId)
-                .Include(a => a.DiagnosisAnswerToTheQuestion)
-                .Select(value => new DataFromKnowlegeBase
+            using PatientPersonalAssistantDbContext db = new PatientPersonalAssistantDbContext(connectionString);
+            var dataList = new List<DataFromKnowlegeBase>(); var data = db.Diagnosis.Where(d => d.BranchId ==
+            branchId).Include(a => a.DiagnosisAnswerToTheQuestion); foreach (var value in data)
+            {
+                Console.WriteLine(value.Name); DataFromKnowlegeBase dataFromKnowlegeBase = new
+                DataFromKnowlegeBase
                 {
                     Id = value.Id,
                     Name = value.Name,
-                    Recommendation = value.Recommendation,
-                    Correlation = value.DiagnosisAnswerToTheQuestion
-                        .Select(corr => new CorrelationOfAnswerAndDiagnosis
-                        {
-                            Id = corr.Id,
-                            AnswerToTheQuestionId = corr.AnswerToTheQuestionId,
-                            WeightOfAnswer = corr.WeightOfAnswer
-                        })
-                        .ToList()
-                })
-                .ToListAsync();
+                    Recommendation = value.Recommendation
+                };
 
-            return data;
+                foreach (var corr in value.DiagnosisAnswerToTheQuestion)
+                {
+                    dataFromKnowlegeBase.Correlation.Add(new CorrelationOfAnswerAndDiagnosis
+                    {
+                        Id = corr.Id,
+                        AnswerToTheQuestionId =
+                    corr.AnswerToTheQuestionId,
+                        WeightOfAnswer = corr.WeightOfAnswer
+                    });
+                }
+                dataList.Add(dataFromKnowlegeBase);
+            }
+            return dataList;
         }
+
 
         public async Task<decimal> GetBranchWeightByBranchIdAsync(decimal branchId)
         {
-            var branch = await _context.Branch
-                .FirstOrDefaultAsync(q => q.Id == branchId);
-
-            return branch?.TotalWeightOfBranchOfQuestion ?? 0;
+            using PatientPersonalAssistantDbContext db = new PatientPersonalAssistantDbContext(connectionString);
+            var branch = await db.Branch.FirstOrDefaultAsync(q => q.Id == branchId).ConfigureAwait(false);
+            return branch.TotalWeightOfBranchOfQuestion;
         }
+
 
         public async Task<string> GetTextOfAnswerById(string textOfAnswerId)
         {
-            var res = await _context.AnswerToTheQuestion
-                .FirstOrDefaultAsync(q => q.Id == Convert.ToDecimal(textOfAnswerId));
+            using PatientPersonalAssistantDbContext db = new PatientPersonalAssistantDbContext(connectionString);
+            var res = await db.AnswerToTheQuestion.FirstOrDefaultAsync(q => q.Id == Convert.ToInt32(textOfAnswerId)).ConfigureAwait(false);
 
-            return res?.TextOfAnswer;
+            return res.TextOfAnswer;
         }
+
 
         public async Task<string> GetBranchNameById(string branchId)
         {
-            var res = await _context.Branch
-                .FirstOrDefaultAsync(q => q.Id == Convert.ToDecimal(branchId));
-
-            return res?.Name;
+            using PatientPersonalAssistantDbContext db = new PatientPersonalAssistantDbContext(connectionString);
+            var res = await db.Branch.FirstOrDefaultAsync(q => q.Id == Convert.ToInt32(branchId)).ConfigureAwait(false);
+            return res.Name;
         }
     }
 }

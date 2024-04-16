@@ -3,7 +3,6 @@
 using Microsoft.EntityFrameworkCore;
 using PatientPersonalAssistant.BAL.Core.Models;
 using PatientPersonalAssistant.DAL.Models;
-using Microsoft.VisualStudio.TestTools.UnitTesting;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using PatientPersonalAssistant.DAL;
@@ -14,11 +13,7 @@ namespace PatientPersonalAssistant.DAL.Models
     {
         private readonly string connectionString;
 
-        public PatientPersonalAssistantDbContext(string connectionString)
-            : base()
-        {
-            this.connectionString = connectionString;
-        }
+        public PatientPersonalAssistantDbContext(string connectionString) => this.connectionString = connectionString;
 
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
         {

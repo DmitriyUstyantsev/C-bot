@@ -5,6 +5,14 @@
     {
       "AbsoluteMoniker": "D:0:0:{A2FE74E1-B743-11D0-AE1A-00A0C90FFFC3}|\u003CMiscFiles\u003E|C:\\Users\\DIAMOND\\Documents\\C# project\\PatientPersonalAssistant.DAL.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
       "RelativeMoniker": "D:0:0:{A2FE74E1-B743-11D0-AE1A-00A0C90FFFC3}|\u003CMiscFiles\u003E|solutionrelative:PatientPersonalAssistant.DAL.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{A2FE74E1-B743-11D0-AE1A-00A0C90FFFC3}|\u003CMiscFiles\u003E|C:\\Users\\DIAMOND\\Documents\\C# project\\PatientPersonalAssistant.BAL.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{A2FE74E1-B743-11D0-AE1A-00A0C90FFFC3}|\u003CMiscFiles\u003E|solutionrelative:PatientPersonalAssistant.BAL.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{A2FE74E1-B743-11D0-AE1A-00A0C90FFFC3}|\u003CMiscFiles\u003E|C:\\Users\\DIAMOND\\Documents\\C# project\\PatientPersonalAssistant.DAL.MSSQLServer.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{A2FE74E1-B743-11D0-AE1A-00A0C90FFFC3}|\u003CMiscFiles\u003E|solutionrelative:PatientPersonalAssistant.DAL.MSSQLServer.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
     }
   ],
   "DocumentGroupContainers": [
@@ -14,8 +22,34 @@
       "DocumentGroups": [
         {
           "DockedWidth": 200,
-          "SelectedChildIndex": 0,
+          "SelectedChildIndex": 2,
           "Children": [
+            {
+              "$type": "Document",
+              "DocumentIndex": 1,
+              "Title": "PatientPersonalAssistant.BAL.cs",
+              "DocumentMoniker": "C:\\Users\\DIAMOND\\Documents\\C# project\\PatientPersonalAssistant.BAL.cs",
+              "RelativeDocumentMoniker": "PatientPersonalAssistant.BAL.cs",
+              "ToolTip": "C:\\Users\\DIAMOND\\Documents\\C# project\\PatientPersonalAssistant.BAL.cs",
+              "RelativeToolTip": "PatientPersonalAssistant.BAL.cs",
+              "ViewState": "AQIAAB0AAAAAAAAAAAAIwEMAAABDAAAA",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2024-04-16T14:36:34.015Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 2,
+              "Title": "PatientPersonalAssistant.DAL.MSSQLServer.cs",
+              "DocumentMoniker": "C:\\Users\\DIAMOND\\Documents\\C# project\\PatientPersonalAssistant.DAL.MSSQLServer.cs",
+              "RelativeDocumentMoniker": "PatientPersonalAssistant.DAL.MSSQLServer.cs",
+              "ToolTip": "C:\\Users\\DIAMOND\\Documents\\C# project\\PatientPersonalAssistant.DAL.MSSQLServer.cs",
+              "RelativeToolTip": "PatientPersonalAssistant.DAL.MSSQLServer.cs",
+              "ViewState": "AQIAAAAAAAAAAAAAAAAAAA4AAAAxAAAA",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2024-04-16T14:33:06.862Z",
+              "EditorCaption": ""
+            },
             {
               "$type": "Document",
               "DocumentIndex": 0,
@@ -24,9 +58,9 @@
               "RelativeDocumentMoniker": "PatientPersonalAssistant.DAL.cs",
               "ToolTip": "C:\\Users\\DIAMOND\\Documents\\C# project\\PatientPersonalAssistant.DAL.cs",
               "RelativeToolTip": "PatientPersonalAssistant.DAL.cs",
-              "ViewState": "AQIAANcAAAAAAAAAAAAAAOgAAABWAAAA",
+              "ViewState": "AQIAAAIAAAAAAAAAAAAkwCUAAAArAAAA",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2024-04-16T12:12:55.322Z",
+              "WhenOpened": "2024-04-16T14:30:28.267Z",
               "EditorCaption": ""
             }
           ]
